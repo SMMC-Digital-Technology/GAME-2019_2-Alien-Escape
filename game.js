@@ -4,15 +4,20 @@ var score, scoreText;
 
 var player;
 
-var spaceship1, spaceship2, spaceship3, spaceship4, spaceship5;
+var spaceships;
 var spaceshipSpeed = 200;
+
+var spacetimes;
+
+var health;
+var MAX_HEALTH = 3;
+var healthIcons = [];
 
 function preload() {
   game.load.image('alien', 'assets/Alien.png');
   game.load.image('spaceship', 'assets/Spaceship.png');
   game.load.image('background', 'assets/Background.png');
-  //game.load.image('ground', 'assets/ground.png');
-  //game.load.image('heart', 'assets/heart.png');
+  game.load.image('heart', 'assets/heart.png');
 }
 
 function create() {
@@ -26,38 +31,23 @@ function create() {
   player.body.collideWorldBounds = true;
   player.body.immovable = true;
 
-  /*spaceship1 = game.add.sprite(850, 10, 'spaceship');
-  spaceship1.enableBody = true;
-  spaceship1.body.velocity.x -= spaceshipSpeed * Math.random();
-
-  spaceship2 = game.add.sprite(850, 140, 'spaceship');
-  spaceship2.enableBody = true;
-  spaceship2.body.velocity.x -= spaceshipSpeed * Math.random();
-
-  spaceship3 = game.add.sprite(850, 270, 'spaceship');
-  spaceship3.enableBody = true;
-  spaceship3.body.velocity.x -= spaceshipSpeed * Math.random();
-
-  spaceship4 = game.add.sprite(850, 400, 'spaceship');
-  spaceship4.enableBody = true;
-  spaceship4.body.velocity.x -= spaceshipSpeed * Math.random();
-
-  spaceship5 = game.add.sprite(850, 530, 'spaceship');
-  spaceship5.enableBody = true;
-  spaceship5.body.velocity.x -= spaceshipSpeed * Math.random();*/
-
   this.cursors = this.input.keyboard.createCursorKeys();
   this.keyW = this.input.keyboard.addKey(Phaser.KeyCode.W);
   this.keyS = this.input.keyboard.addKey(Phaser.KeyCode.S);
 
-  /*spaceships = game.add.group();
+  spaceships = game.add.group();
   spaceships.enableBody = true;
-  for(var i=0; i < 5; i++){
-    var spaceship = spaceships.create(850, (i*130) + 10, 'spaceship');
-    spaceship.body.velocity.x -= spaceshipSpeed * Math.random();
-  }*/
+  for(var i=0; i < 5; i++) {
+    var spaceship = spaceships.create(850, randomNum(70, 550), 'spaceship');
+    spacetimes = Math.random();
+    spaceship.body.velocity.x = -spaceshipSpeed * spacetimes;
+    console.log(spacetimes);
+  }
 
-
+  health = MAX_HEALTH;
+  for (var i=0; i < MAX_HEALTH; i++){
+    healthIcons[i] = game.add.sprite(40 + 48 * (i + 1), 16, 'heart');
+  }
 
   score = 0;
   scoreText = game.add.text(game.world.width / 2, 16, "Score: 0", {fontSize: '32px', fill: '#ffffff'});
@@ -74,6 +64,26 @@ function update() {
     player.body.y += 4;
   }
 
+  game.physics.arcade.overlap(player, spaceships, hitSpaceship, null, this);
+
+  spaceships.forEach(checkShipPosition, this, true);
+
   scoreText.text = "Score: " + score;
   score++;
+}
+
+function checkShipPosition(ship) {
+  if (ship.x < -40) {
+    ship.x = 850;
+    ship.y = randomNum(70, 550);
+  }
+}
+
+function hitSpaceship(player, ship){
+  healthIcons[health].alpha = 0;
+  health -= 1;
+}
+
+function randomNum(min, max){
+  return Math.floor(Math.random()* (max - min + 1) + min);
 }
