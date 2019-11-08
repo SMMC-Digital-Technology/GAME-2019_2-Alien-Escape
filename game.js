@@ -40,6 +40,7 @@ function create() {
   spaceships = game.add.group();
   spaceships.enableBody = true;
   speedMultiplier = 1;
+  scoreTracker = 0;
   for(var i=0; i < 5; i++) {
     var spaceship = spaceships.create(850, randomNum(70, 550), 'spaceship');
     spacetime = randomNum(5, 10) / 10;
@@ -77,7 +78,11 @@ function update() {
   score++;
   scoreTracker++;
   if (scoreTracker > 500){
-    speedMultiplier * 2;
+    if(score < 5000){
+      speedMultiplier += 0.25;
+    }else if(score > 5000){
+      speedMultiplier += 0.1;
+    }
     scoreTracker = 0;
     console.log(speedMultiplier);
   }
