@@ -6,6 +6,8 @@ var player;
 
 var spaceships;
 var spaceshipSpeed = 200;
+var speedMultiplier;
+var scoreTracker;
 
 var spacetime;
 
@@ -37,11 +39,13 @@ function create() {
 
   spaceships = game.add.group();
   spaceships.enableBody = true;
+  speedMultiplier = 1;
   for(var i=0; i < 5; i++) {
     var spaceship = spaceships.create(850, randomNum(70, 550), 'spaceship');
     spacetime = randomNum(5, 10) / 10;
-    spaceship.body.velocity.x = -spaceshipSpeed * spacetime;
+    spaceship.body.velocity.x = -spaceshipSpeed * spacetime * speedMultiplier;
   }
+
 
   health = MAX_HEALTH;
   for (var i=0; i < MAX_HEALTH; i++){
@@ -66,19 +70,24 @@ function update() {
   spaceships.forEach(checkShipPosition, this, true);
 
   spacetime = randomNum(5, 10) / 10;
-  console.log(spacetime);
 
   player.body.velocity.setTo(0,0);
 
   scoreText.text = "Score: " + score;
   score++;
+  scoreTracker++;
+  if (scoreTracker > 500){
+    speedMultiplier * 2;
+    scoreTracker = 0;
+    console.log(speedMultiplier);
+  }
 }
 
 function checkShipPosition(ship) {
   if (ship.x < -40) {
     ship.x = 850;
     ship.y = randomNum(70, 550);
-    ship.body.velocity.y = -spaceshipSpeed * spacetime;
+    ship.body.velocity.x = -spaceshipSpeed * spacetime * speedMultiplier;
   }
 }
 
@@ -88,7 +97,7 @@ function hitSpaceship(player, ship){
     healthIcons[health].alpha = i / 100;
     ship.x = 845;
     ship.y = randomNum(70, 550);
-    ship.body.velocity.x = -spaceshipSpeed * spacetime;
+    ship.body.velocity.x = -spaceshipSpeed * spacetime * speedMultiplier;
   }
   if (health == 0){
     game.state.restart();
